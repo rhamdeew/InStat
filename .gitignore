@@ -1,0 +1,8 @@
+composer.json
+composer.lock
+composer.phar
+
+.env
+/templates/
+/templates/default
+/vendor
