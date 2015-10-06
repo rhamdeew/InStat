@@ -54,6 +54,10 @@ if(isset($options['number'])) {
 	$number = $options['number'];
 }
 
+if(!isset($tag)) {
+	$tag = getenv('HASHTAG');
+}
+
 $date = date('y-m-d');
 $time = time();
 $params = [];
