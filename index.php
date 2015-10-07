@@ -67,41 +67,49 @@ $klein->respond('GET', '/best', function ($request, $response, $service) use ($k
 	}
 	else {
 		$response->code('404');
+		$service->metaTitle = "404";
 		$service->render($service->templatePath.'views/error.php');
 	}
 });
 
 //Best-ever page with pagination
-$klein->respond('GET', '/best/[i:page]', function ($request, $response, $service) use ($klein) {
+$klein->respond('GET', '/best/[*:page]', function ($request, $response, $service) use ($klein) {
 	$flag = false;
-	$offset = $request->page-1;
-	if($offset>0) {
-		$count = ORM::for_table('photos')->order_by_desc('likes')->offset(10*$offset)->limit(90)->select('id')->find_many();
-		$pagination = [
-			$offset,
-			'active',
-		];
-		$nextPages = floor(count($count)/10);
-		for($i=1;$i<=$nextPages;$i++) {
-			$pagination[] = $request->page+$i; 
+	if(filter_var($request->page,FILTER_VALIDATE_INT,array("min_range"=>1))) {
+		$offset = $request->page-1;
+		if($offset==0) {
+			header('Location: /best');
+			exit;
 		}
+		if($offset>0) {
+			$count = ORM::for_table('photos')->order_by_desc('likes')->offset(10*$offset)->limit(90)->select('id')->find_many();
+			$pagination = [
+				$offset,
+				'active',
+			];
+			$nextPages = floor(count($count)/10);
+			for($i=1;$i<=$nextPages;$i++) {
+				$pagination[] = $request->page+$i; 
+			}
 
-		$items = ORM::for_table('photos')->order_by_desc('likes')->offset(10*$offset)->limit(10)->find_many();
-		if(!empty($items)) {
-			$service->metaKeywords = 'Лучшие инстаграмы Ульяновска за все время страница '.$request->page;
-			$service->metaTitle = 'Лучшие фотографии за все время #'.$service->hashTag.' страница '.$request->page;
-			$service->pageTitle = 'Лучшие фотографии за все время #'.$service->hashTag.' страница '.$request->page;
+			$items = ORM::for_table('photos')->order_by_desc('likes')->offset(10*$offset)->limit(10)->find_many();
+			if(!empty($items)) {
+				$service->metaKeywords = 'Лучшие инстаграмы Ульяновска за все время страница '.$request->page;
+				$service->metaTitle = 'Лучшие фотографии за все время #'.$service->hashTag.' страница '.$request->page;
+				$service->pageTitle = 'Лучшие фотографии за все время #'.$service->hashTag.' страница '.$request->page;
 
-			$service->items = $items;
-			$service->pagination = $pagination;
-			$service->partUrl = '/best/';
-			$service->page = $request->page;
-			$service->render($service->templatePath.'views/best.php');
-			$flag = true;
+				$service->items = $items;
+				$service->pagination = $pagination;
+				$service->partUrl = '/best/';
+				$service->page = $request->page;
+				$service->render($service->templatePath.'views/best.php');
+				$flag = true;
+			}
 		}
 	}
 	if(!$flag) {
 		$response->code('404');
+		$service->metaTitle = "404";
 		$service->render($service->templatePath.'views/error.php');
 	}
 
@@ -127,41 +135,48 @@ $klein->respond('GET', '/oldest', function ($request, $response, $service) use (
 	}
 	else {
 		$response->code('404');
+		$service->metaTitle = "404";
 		$service->render($service->templatePath.'views/error.php');
 	}
 });
 
-$klein->respond('GET', '/oldest/[i:page]', function ($request, $response, $service) use ($klein) {
+$klein->respond('GET', '/oldest/[*:page]', function ($request, $response, $service) use ($klein) {
 	$flag = false;
-	$offset = $request->page-1;
-	if($offset>0) {
-		$count = ORM::for_table('photos')->order_by_asc('created_time')->offset(10*$offset)->limit(90)->select('id')->find_many();
-		$pagination = [
-			$offset,
-			'active',
-		];
-		$nextPages = floor(count($count)/10);
-		for($i=1;$i<=$nextPages;$i++) {
-			$pagination[] = $request->page+$i; 
-		}
+	if(filter_var($request->page,FILTER_VALIDATE_INT,array("min_range"=>1))) {
+		$offset = $request->page-1;
+			if($offset==0) {
+				header('Location: /oldest');
+				exit;
+			}
+		if($offset>0) {
+			$count = ORM::for_table('photos')->order_by_asc('created_time')->offset(10*$offset)->limit(90)->select('id')->find_many();
+			$pagination = [
+				$offset,
+				'active',
+			];
+			$nextPages = floor(count($count)/10);
+			for($i=1;$i<=$nextPages;$i++) {
+				$pagination[] = $request->page+$i; 
+			}
 
-		$items = ORM::for_table('photos')->order_by_asc('created_time')->offset(10*$offset)->limit(10)->find_many();
-		if(!empty($items)) {
-			$service->metaKeywords = 'Самые старые инстаграмы Ульяновска страница '.$request->page;
-			$service->metaTitle = 'Самые старые инстаграмы Ульяновска #'.$service->hashTag.' страница '.$request->page;
-			$service->pageTitle = 'Самые старые инстаграмы Ульяновска #'.$service->hashTag.' страница '.$request->page;
+			$items = ORM::for_table('photos')->order_by_asc('created_time')->offset(10*$offset)->limit(10)->find_many();
+			if(!empty($items)) {
+				$service->metaKeywords = 'Самые старые инстаграмы Ульяновска страница '.$request->page;
+				$service->metaTitle = 'Самые старые инстаграмы Ульяновска #'.$service->hashTag.' страница '.$request->page;
+				$service->pageTitle = 'Самые старые инстаграмы Ульяновска #'.$service->hashTag.' страница '.$request->page;
 
-			$service->items = $items;
-			$service->pagination = $pagination;
-			$service->partUrl = '/oldest/';
-			$service->page = $request->page;
-			$service->render($service->templatePath.'views/best.php');
-			$flag = true;
+				$service->items = $items;
+				$service->pagination = $pagination;
+				$service->partUrl = '/oldest/';
+				$service->page = $request->page;
+				$service->render($service->templatePath.'views/best.php');
+				$flag = true;
+			}
 		}
 	}
-	
 	if(!$flag) {
 		$response->code('404');
+		$service->metaTitle = "404";
 		$service->render($service->templatePath.'views/error.php');
 	}
 });
@@ -184,41 +199,49 @@ $klein->respond('GET', '/not-popular', function ($request, $response, $service) 
 	}
 	else {
 		$response->code('404');
+		$service->metaTitle = "404";
 		$service->render($service->templatePath.'views/error.php');
 	}
 });
 
-$klein->respond('GET', '/not-popular/[i:page]', function ($request, $response, $service) use ($klein) {
+$klein->respond('GET', '/not-popular/[*:page]', function ($request, $response, $service) use ($klein) {
 	$flag = false;
-	$offset = $request->page-1;
-	if($offset>0) {
-		$count = ORM::for_table('photos')->order_by_asc('likes')->offset(10*$offset)->limit(90)->select('id')->find_many();
-		$pagination = [
-			$offset,
-			'active',
-		];
-		$nextPages = floor(count($count)/10);
-		for($i=1;$i<=$nextPages;$i++) {
-			$pagination[] = $request->page+$i; 
+	if(filter_var($request->page,FILTER_VALIDATE_INT,array("min_range"=>1))) {
+		$offset = $request->page-1;
+			if($offset==0) {
+			header('Location: /not-popular');
+			exit;
 		}
 
-		$items = ORM::for_table('photos')->order_by_asc('likes')->offset(10*$offset)->limit(10)->find_many();
-		if(!empty($items)) {
-			$service->metaKeywords = 'Самые непопулярные инстаграмы Ульяновска страница '.$request->page;
-			$service->metaTitle = 'Самые непопулярные инстаграмы Ульяновска #'.$service->hashTag.' страница '.$request->page;
-			$service->pageTitle = 'Самые непопулярные инстаграмы Ульяновска #'.$service->hashTag.' страница '.$request->page;
+		if($offset>0) {
+			$count = ORM::for_table('photos')->order_by_asc('likes')->offset(10*$offset)->limit(90)->select('id')->find_many();
+			$pagination = [
+				$offset,
+				'active',
+			];
+			$nextPages = floor(count($count)/10);
+			for($i=1;$i<=$nextPages;$i++) {
+				$pagination[] = $request->page+$i; 
+			}
 
-			$service->items = $items;
-			$service->pagination = $pagination;
-			$service->partUrl = '/not-popular/';
-			$service->page = $request->page;
-			$service->render($service->templatePath.'views/best.php');
-			$flag = true;
+			$items = ORM::for_table('photos')->order_by_asc('likes')->offset(10*$offset)->limit(10)->find_many();
+			if(!empty($items)) {
+				$service->metaKeywords = 'Самые непопулярные инстаграмы Ульяновска страница '.$request->page;
+				$service->metaTitle = 'Самые непопулярные инстаграмы Ульяновска #'.$service->hashTag.' страница '.$request->page;
+				$service->pageTitle = 'Самые непопулярные инстаграмы Ульяновска #'.$service->hashTag.' страница '.$request->page;
+
+				$service->items = $items;
+				$service->pagination = $pagination;
+				$service->partUrl = '/not-popular/';
+				$service->page = $request->page;
+				$service->render($service->templatePath.'views/best.php');
+				$flag = true;
+			}
 		}
 	}
-	
 	if(!$flag) {
 		$response->code('404');
+		$service->metaTitle = "404";
 		$service->render($service->templatePath.'views/error.php');
 	}
 });
@@ -239,38 +262,34 @@ $klein->respond('GET', '/users', function ($request, $response, $service) use ($
 
 	$users = ORM::for_table('user')->order_by_desc('followers')->where('banned',0)->limit(100)->select('user_id')->select('user_name')->select('followers')->find_array();
 
-	$inusers = array();
-	foreach($users as $key => $user) {
-		$inusers[] = $user['user_id'];
-	}
-	$inusers = implode(',', $inusers);
+	if(!empty($users)) {
+		$inusers = array();
+		foreach($users as $key => $user) {
+			$inusers[] = $user['user_id'];
+		}
+		$inusers = implode(',', $inusers);
 
-	// $time = time();
-	$result = ORM::for_table('user_log')->raw_query('
-		SELECT ul.user_id,ul.posts,ul.followers,ul.follows,ul2.posts AS yposts,ul2.followers AS yfollowers,ul2.follows AS yfollows 
-		FROM user_log AS ul 
-		LEFT JOIN user_log AS ul2 ON ul.user_id=ul2.user_id 
-			WHERE ul.user_id IN('.$inusers.') AND ul.date = "'.$date.'" AND ul2.date = "'.$yesterdayDate.'" 
-		LIMIT 100
-			')->find_array();
-	// $now = time();
-	// echo $now-$time;
+		// $time = time();
+		$result = ORM::for_table('user_log')->raw_query('
+			SELECT ul.user_id,ul.posts,ul.followers,ul.follows,ul2.posts AS yposts,ul2.followers AS yfollowers,ul2.follows AS yfollows 
+			FROM user_log AS ul 
+			LEFT JOIN user_log AS ul2 ON ul.user_id=ul2.user_id 
+				WHERE ul.user_id IN('.$inusers.') AND ul.date = "'.$date.'" AND ul2.date = "'.$yesterdayDate.'" 
+			LIMIT 100
+				')->find_array();
 
-	foreach($result as $r) {
-		foreach($users as $k => $u) {
-			if($r['user_id']==$u['user_id']) {
-				$users[$k] = $u + $r;
+		foreach($result as $r) {
+			foreach($users as $k => $u) {
+				if($r['user_id']==$u['user_id']) {
+					$users[$k] = $u + $r;
+				}
 			}
 		}
-	}
-	// var_dump($users);
 
-	$pagination = [
-		1 => 'active',
-		2,3,4,5,6,7,8,9,10
-	];
-
-	if(!empty($users)) {
+		$pagination = [
+			1 => 'active',
+			2,3,4,5,6,7,8,9,10
+		];
 
 		$service->metaKeywords = 'Самые популярные пользователи инстаграм Ульяновска';
 		$service->metaTitle = 'Самые популярные пользователи инстаграм Ульяновска #'.$service->hashTag;
@@ -285,79 +304,87 @@ $klein->respond('GET', '/users', function ($request, $response, $service) use ($
 	}
 	else {
 		$response->code('404');
+		$service->metaTitle = "404";
 		$service->render($service->templatePath.'views/error.php');
 	}
 });
 
-$klein->respond('GET', '/users/[i:page]', function ($request, $response, $service) use ($klein) {
+$klein->respond('GET', '/users/[*:page]', function ($request, $response, $service) use ($klein) {
 	$flag = false;
-	$offset = $request->page-1;
-	$hour = date('H');
-	$yesterDayFlag = false;
-	if($hour>=0 && $hour<8) {
-		$date = date('y-m-d',time()-86400);
-		$yesterdayDate = date('y-m-d',time()-(86400*2));
-		$yesterDayFlag = true;
-	}
-	else {
-		$date = date('y-m-d');
-		$yesterdayDate = date('y-m-d',time()-86400);
-	}
-	// $count = ORM::for_table('user')->order_by_desc('followers')->where('banned',0)->offset(100*$offset)->limit(900)->find_many();
-	$count = ORM::for_table('user')->raw_query('SELECT COUNT(*) AS count FROM user WHERE banned = 0')->find_array();
-	$count = ceil(intval($count[0]['count'])/100);
-	if($offset>0) {
-		$pagination = [$offset,'active'];
-	}
-	else {
-		$pagination = ['active'];
-	}
-	$k=0;
-	for($i=$offset;$i<=$count;$i++) {
-		if($k>9) 
-			break;
-		$pagination[] = $i+2;
-		$k++;
-	}
-	$users = ORM::for_table('user')->order_by_desc('followers')->where('banned',0)->offset(100*$offset)->limit(100)->select('user_id')->select('user_name')->select('followers')->find_array();
-	$inusers = array();
-	foreach($users as $key => $user) {
-		$inusers[] = $user['user_id'];
-	}
-	$inusers = implode(',', $inusers);
-	$result = ORM::for_table('user_log')->raw_query('
-		SELECT ul.user_id,ul.posts,ul.followers,ul.follows,ul2.posts AS yposts,ul2.followers AS yfollowers,ul2.follows AS yfollows 
-		FROM user_log AS ul 
-		LEFT JOIN user_log AS ul2 ON ul.user_id=ul2.user_id 
-			WHERE ul.user_id IN('.$inusers.') AND ul.date = "'.$date.'" AND ul2.date = "'.$yesterdayDate.'" 
-		LIMIT 100
-			')->find_array();
+	if(filter_var($request->page,FILTER_VALIDATE_INT,array("min_range"=>1))) {
+		$offset = $request->page-1;
+		if($offset==0) {
+			header('Location: /users');
+			exit;
+		}
+		$hour = date('H');
+		$yesterDayFlag = false;
+		if($hour>=0 && $hour<8) {
+			$date = date('y-m-d',time()-86400);
+			$yesterdayDate = date('y-m-d',time()-(86400*2));
+			$yesterDayFlag = true;
+		}
+		else {
+			$date = date('y-m-d');
+			$yesterdayDate = date('y-m-d',time()-86400);
+		}
+		// $count = ORM::for_table('user')->order_by_desc('followers')->where('banned',0)->offset(100*$offset)->limit(900)->find_many();
+		$count = ORM::for_table('user')->raw_query('SELECT COUNT(*) AS count FROM user WHERE banned = 0')->find_array();
+		$count = ceil(intval($count[0]['count'])/100);
+		if($offset>0) {
+			$pagination = [$offset,'active'];
+		}
+		else {
+			$pagination = ['active'];
+		}
+		$k=0;
+		for($i=$offset;$i<=$count;$i++) {
+			if($k>9) 
+				break;
+			$pagination[] = $i+2;
+			$k++;
+		}
+		$users = ORM::for_table('user')->order_by_desc('followers')->where('banned',0)->offset(100*$offset)->limit(100)->select('user_id')->select('user_name')->select('followers')->find_array();
 
-	foreach($result as $r) {
-		foreach($users as $k => $u) {
-			if($r['user_id']==$u['user_id']) {
-				// $users[$k] = array_merge($u,$r);
-				$users[$k] = $u + $r;
+		if(!empty($users)) {
+			$inusers = array();
+			foreach($users as $key => $user) {
+				$inusers[] = $user['user_id'];
 			}
+			$inusers = implode(',', $inusers);
+			$result = ORM::for_table('user_log')->raw_query('
+				SELECT ul.user_id,ul.posts,ul.followers,ul.follows,ul2.posts AS yposts,ul2.followers AS yfollowers,ul2.follows AS yfollows 
+				FROM user_log AS ul 
+				LEFT JOIN user_log AS ul2 ON ul.user_id=ul2.user_id 
+					WHERE ul.user_id IN('.$inusers.') AND ul.date = "'.$date.'" AND ul2.date = "'.$yesterdayDate.'" 
+				LIMIT 100
+					')->find_array();
+
+			foreach($result as $r) {
+				foreach($users as $k => $u) {
+					if($r['user_id']==$u['user_id']) {
+						// $users[$k] = array_merge($u,$r);
+						$users[$k] = $u + $r;
+					}
+				}
+			}
+
+			$service->metaKeywords = 'Самые популярные пользователи инстаграм Ульяновска страница '.$request->page;
+			$service->metaTitle = 'Самые популярные пользователи инстаграм Ульяновска #'.$service->hashTag.' страница '.$request->page;
+			$service->pageTitle = 'Самые популярные пользователи инстаграм Ульяновска #'.$service->hashTag.' страница '.$request->page;
+			$service->siteName = 'Самые популярные пользователи';
+			$service->items = $users;
+			$service->pagination = $pagination;
+			$service->yesterDayFlag = $yesterDayFlag;
+			$service->partUrl = '/users/';
+			$service->page = $request->page;
+			$service->render($service->templatePath.'views/users.php');
+			$flag = true;
 		}
 	}
-
-	if(!empty($users)) {
-		$service->metaKeywords = 'Самые популярные пользователи инстаграм Ульяновска страница '.$request->page;
-		$service->metaTitle = 'Самые популярные пользователи инстаграм Ульяновска #'.$service->hashTag.' страница '.$request->page;
-		$service->pageTitle = 'Самые популярные пользователи инстаграм Ульяновска #'.$service->hashTag.' страница '.$request->page;
-		$service->siteName = 'Самые популярные пользователи';
-		$service->items = $users;
-		$service->pagination = $pagination;
-		$service->yesterDayFlag = $yesterDayFlag;
-		$service->partUrl = '/users/';
-		$service->page = $request->page;
-		$service->render($service->templatePath.'views/users.php');
-		$flag = true;
-	}
-	
 	if(!$flag) {
 		$response->code('404');
+		$service->metaTitle = "404";
 		$service->render($service->templatePath.'views/error.php');
 	}
 });
@@ -398,6 +425,7 @@ $klein->respond('GET', '/user-search/[*:username]', function ($request, $respons
 
 	if(!$flag) {
 		$response->code('404');
+		$service->metaTitle = "404";
 		$service->render($service->templatePath.'views/error.php');
 	}
 });
@@ -429,6 +457,7 @@ $klein->respond('GET', '/user-detail/[*:username]', function ($request, $respons
 
 	if(!$flag) {
 		$response->code('404');
+		$service->metaTitle = "404";
 		$service->render($service->templatePath.'views/error.php');
 	}
 });
