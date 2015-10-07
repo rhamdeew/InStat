@@ -438,10 +438,5 @@ $klein->respond('GET', '/about', function ($request, $response, $service) use ($
 	$service->render($service->templatePath.'views/page.php');
 });
 
-$klein->respond(function ($request, $response, $service) {
-		$response->code('404');
-		$service->render($service->templatePath.'views/error.php');
-});
-
 $klein->dispatch();
 ?>
