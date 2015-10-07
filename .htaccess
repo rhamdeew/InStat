@@ -7,3 +7,8 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 # иначе отправлять запрос на файл index.php
 RewriteRule . index.php
+
+<FilesMatch "\.(?:md|sql|json|lock|conf)$">
+Order allow,deny
+Deny from all
+</FilesMatch>
