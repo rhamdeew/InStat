@@ -29,22 +29,27 @@ $longopts = array(
 
 $options = getopt($shortopts,$longopts);
 
+//Получаем все фотографии по хэштегу
 if(isset($options['best'])) {
 	$mode = 'best';
 	$tag = $options['best'];
 }
+//Обновление лайков у 100 лучших фотографий
 if(isset($options['best100'])) {
 	$mode = 'best100';
 	$tag = $options['best100'];
 }
+//Получаем все фотографии по хэштегу за сутки
 if(isset($options['topday'])) {
 	$mode = 'topday';
 	$tag = $options['topday'];
 }
+//Получаем все фотографии по хэштегу за неделю
 if(isset($options['topweek'])) {
 	$mode = 'topweek';
 	$tag = $options['topweek'];
 }
+//Обновляем значения у пользователей
 if(isset($options['users'])) {
 	$mode = "users";
 }
@@ -54,7 +59,7 @@ if(isset($options['number'])) {
 	$number = $options['number'];
 }
 
-if(!isset($tag)) {
+if(!isset($tag) || empty($tag)) {
 	$tag = getenv('HASHTAG');
 }
 
