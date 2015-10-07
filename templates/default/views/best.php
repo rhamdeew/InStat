@@ -1,7 +1,7 @@
 		<div class="row">
 			<div class="col-xs-12 col-md-8 col-lg-6 col-lg-offset-3 page-container">
-			<h1><?= $this->escape($this->siteName); ?></h1>
-			<h2><?= $this->escape($this->pageTitle); ?></h2>
+			<h1><?php echo $this->escape($this->siteName); ?></h1>
+			<h2><?php echo $this->escape($this->pageTitle); ?></h2>
 
 			<?php if(isset($this->page)): ?>
 				<h2>Страница: <?php echo $this->page; ?></h2>

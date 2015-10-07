@@ -50,8 +50,8 @@
 			</tr>
 			
 			<?php endforeach; ?>
-			<?else:?>
-			<?endif;?>
+			<?php else:?>
+			<?php endif;?>
 			</table>
 			</div>
 		</div>
