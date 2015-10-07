@@ -227,7 +227,7 @@ $klein->respond('GET', '/users', function ($request, $response, $service) use ($
 	$hour = date('H');
 
 	$yesterDayFlag = false;
-	if($hour>=0 && $hour<18) { //TODO: Убрать!!!
+	if($hour>=0 && $hour<8) {
 		$date = date('y-m-d',time()-86400);
 		$yesterdayDate = date('y-m-d',time()-(86400*2));
 		$yesterDayFlag = true;
@@ -294,7 +294,7 @@ $klein->respond('GET', '/users/[i:page]', function ($request, $response, $servic
 	$offset = $request->page-1;
 	$hour = date('H');
 	$yesterDayFlag = false;
-	if($hour>=0 && $hour<19) { //TODO: Убрать!!!
+	if($hour>=0 && $hour<8) {
 		$date = date('y-m-d',time()-86400);
 		$yesterdayDate = date('y-m-d',time()-(86400*2));
 		$yesterDayFlag = true;
