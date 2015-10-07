@@ -10,7 +10,7 @@
 				<td>подписки</td>
 			</tr>
 			<?php $this->result = array_reverse($this->result);?>
-			<?if(count($this->result>1)):?>
+			<?php if(count($this->result>1)):?>
 			<?php foreach($this->result as $key => $item):?>
 			<?php
 			$postDiffHtml = '--';
