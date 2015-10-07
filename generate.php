@@ -85,7 +85,7 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 			$result = ORM::for_table('photos')->where('updated',$date)->where('tag',$tag)->where_gt('next_max_id',0)->order_by_asc('created_time')->find_one();
 			
 			$params = [];
-			if($result) {
+			if(is_object($result)) {
 				$params = ['max_tag_id'=>$result->next_max_id];
 			}
 			sleep(1);
@@ -107,7 +107,7 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 
 			
 			$user = ORM::for_table('user')->where('user_id',$photo->user->id)->find_one();
-			if($user) {
+			if(is_object($user)) {
 				//Если пользователь обновил имя то меняем его в БД
 				if($user->user_name!=$photo->user->username) {
 					$user->user_name = $photo->user->username;
@@ -138,9 +138,10 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 
 
 				$doubleCheck = ORM::for_table('user')->where('user_name',$photo->user->username)->find_one();
-				if($doubleCheck) {
+				if(is_object($doubleCheck)) {
 					$duser = ORM::for_table('user')->where_equal('user_name', $photo->user->username)->delete_many();
 				}
+
 				$user->save();
 				echo "New user: ".$photo->user->username."\n";
 
@@ -148,7 +149,7 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 
 
 			$dbPhoto = ORM::for_table('photos')->where('photo_id',$photo->id)->where('tag',$tag)->find_one();
-			if($dbPhoto) {
+			if(is_object($dbPhoto)) {
 				//Если фото существует обновляем лайки
 				if($dbPhoto->likes!=$photo->likes->count) {
 					$dbPhoto->likes = $photo->likes->count;
@@ -224,11 +225,14 @@ if($mode=="users") {
 
 		if($result) {
 			$dbUserLog = ORM::for_table('user_log')->where('date',$date)->where('user_id',$user->user_id)->find_one();
-			if($dbUserLog) {
+			if(is_object($dbUserLog)) {
 				if($result->data->counts->media!=$dbUserLog->posts || $result->data->counts->followed_by!=$dbUserLog->followers || $result->data->counts->follows!=$dbUserLog->follows) {
-					$dbUserLog->posts = $result->data->counts->media;
-					$dbUserLog->followers = $result->data->counts->followed_by;
-					$dbUserLog->follows = $result->data->counts->follows;
+					if(isset($result->data->counts->media))
+						$dbUserLog->posts = $result->data->counts->media;
+					if(isset($result->data->counts->followed_by))
+						$dbUserLog->followers = $result->data->counts->followed_by;
+					if(isset($result->data->counts->follows))
+						$dbUserLog->follows = $result->data->counts->follows;
 					$dbUserLog->save();
 					echo "Update user log: ".$user->user_id."   ".($key+1)."\n";
 				}
