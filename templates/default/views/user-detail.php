@@ -9,7 +9,7 @@
 				<td>подписчики</td>
 				<td>подписки</td>
 			</tr>
-			<?$this->result = array_reverse($this->result);?>
+			<?php $this->result = array_reverse($this->result);?>
 			<?if(count($this->result>1)):?>
 			<?php foreach($this->result as $key => $item):?>
 			<?php
