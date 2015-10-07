@@ -1,0 +1,8 @@
+{
+    "require": {
+        "cosenary/instagram": "^2.3",
+        "j4mie/idiorm": "*",
+        "vlucas/phpdotenv": "^2.0",
+        "klein/klein": "^2.1"
+    }
+}
