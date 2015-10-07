@@ -26,8 +26,8 @@ CREATE TABLE `photos` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `created_time` int(11) NOT NULL,
   `link` varchar(200) NOT NULL,
-  `user_id` int(11) NOT NULL,
-  `tag` varchar(20) NOT NULL,
+  `user_id` bigint(20) NOT NULL,
+  `tag` varchar(30) NOT NULL,
   `updated` date NOT NULL,
   `next_max_id` varchar(200) NOT NULL,
   `photo_id` varchar(50) NOT NULL,
@@ -45,7 +45,7 @@ DROP TABLE IF EXISTS `user`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
+  `user_id` bigint(20) NOT NULL,
   `user_name` varchar(200) COLLATE utf8_unicode_ci NOT NULL,
   `banned` tinyint(1) NOT NULL,
   `followers` int(11) NOT NULL,
@@ -61,8 +61,8 @@ DROP TABLE IF EXISTS `user_log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `user_log` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) NOT NULL,
   `posts` int(11) NOT NULL,
   `followers` int(11) NOT NULL,
   `follows` int(11) NOT NULL,

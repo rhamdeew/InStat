@@ -241,7 +241,7 @@ $klein->respond('GET', '/users', function ($request, $response, $service) use ($
 
 	$inusers = array();
 	foreach($users as $key => $user) {
-		$inusers[] = intval($user['user_id']);
+		$inusers[] = $user['user_id'];
 	}
 	$inusers = implode(',', $inusers);
 
@@ -322,7 +322,7 @@ $klein->respond('GET', '/users/[i:page]', function ($request, $response, $servic
 	$users = ORM::for_table('user')->order_by_desc('followers')->where('banned',0)->offset(100*$offset)->limit(100)->select('user_id')->select('user_name')->select('followers')->find_array();
 	$inusers = array();
 	foreach($users as $key => $user) {
-		$inusers[] = intval($user['user_id']);
+		$inusers[] = $user['user_id'];
 	}
 	$inusers = implode(',', $inusers);
 	$result = ORM::for_table('user_log')->raw_query('
