@@ -69,7 +69,7 @@ $params = [];
 
 if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 
-	$tagResult = $instagram->getTag($tag);
+	$tagResult = $instagram->getTag(urlencode($tag));
 	$tagCount = $tagResult->data->media_count;
 
 	//Если указываем number, то лимитируем по нему
@@ -91,104 +91,118 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 			sleep(1);
 		}
 
-		$photos = $instagram->getTagMedia($tag,33,$params);
-		$endPhoto = end($photos->data);
-		
-		foreach ($photos->data as $key => $photo) {
-
-			//Если режим с ограничением по дате публикации то останавливаем цикл по условию
-			if($mode=="topday" || $mode=="topweek") {
-				$timeDiff = ($mode=="topday") ? 86400 : 86400*7;
-
-				if(($time-$photo->created_time)>=$timeDiff) {
-					break 2;
-				}
-			}
-
+		$photos = $instagram->getTagMedia(urlencode($tag),33,$params);
+		if(is_array($photos->data)) {
+			$endPhoto = end($photos->data);
 			
-			$user = ORM::for_table('user')->where('user_id',$photo->user->id)->find_one();
-			if(is_object($user)) {
-				//Если пользователь обновил имя то меняем его в БД
-				if($user->user_name!=$photo->user->username) {
-					$user->user_name = $photo->user->username;
-					$user->save();
-					echo "Update user: ".$user->user_id."\n";
-				}
-			}
-			else {
-				//Если пользователя не существует в БД, то создаем его и делаем первую запись в журнале
-				$user = ORM::for_table('user')->create();
-				$user->user_id = $photo->user->id;
+			foreach ($photos->data as $key => $photo) {
 
-				$getUser = $instagram->getUser($photo->user->id);
-				if($getUser) {
-					$user->followers = $getUser->data->counts->followed_by;
+				//Если режим с ограничением по дате публикации то останавливаем цикл по условию
+				if($mode=="topday" || $mode=="topweek") {
+					$timeDiff = ($mode=="topday") ? 86400 : 86400*7;
 
-					$dbUserLog = ORM::for_table('user_log')->create();
-					$dbUserLog->user_id = $photo->user->id;
-					$dbUserLog->date = $date;
-					$dbUserLog->posts = $getUser->data->counts->media;
-					$dbUserLog->followers = $getUser->data->counts->followed_by;
-					$dbUserLog->follows = $getUser->data->counts->follows;
-					$dbUserLog->save();
-					echo "New user log: ".$photo->user->id."\n";
-				}
-
-				$user->user_name = $photo->user->username;
-
-
-				$doubleCheck = ORM::for_table('user')->where('user_name',$photo->user->username)->find_one();
-				if(is_object($doubleCheck)) {
-					$duser = ORM::for_table('user')->where_equal('user_name', $photo->user->username)->delete_many();
-				}
-
-				$user->save();
-				echo "New user: ".$photo->user->username."\n";
-
-			}
-
-
-			$dbPhoto = ORM::for_table('photos')->where('photo_id',$photo->id)->where('tag',$tag)->find_one();
-			if(is_object($dbPhoto)) {
-				//Если фото существует обновляем лайки
-				if($dbPhoto->likes!=$photo->likes->count) {
-					$dbPhoto->likes = $photo->likes->count;
-				}
-				$dbPhoto->updated = $date;
-				$dbPhoto->save();
-			}
-			else {
-				//Если не существует, то создаем
-				$dbPhoto = ORM::for_table('photos')->create();
-				$dbPhoto->created_time = $photo->created_time;
-				$dbPhoto->link = $photo->link;
-				$dbPhoto->user_id = $user->user_id;
-				$dbPhoto->tag = $tag;
-				$dbPhoto->updated = $date;
-				$dbPhoto->photo_id = $photo->id;
-				$dbPhoto->likes = $photo->likes->count;
-				$dbPhoto->save();
-				echo "New photo: ".$photo->id."\n";
-			}
-			
-			//Ставим метку пагинации
-			if($dbPhoto->photo_id==$endPhoto->id) {
-				if(isset($photos->pagination->next_max_tag_id)) {
-					if($mode=="best") {
-						$dbPhoto->next_max_id = $photos->pagination->next_max_tag_id;
-						$dbPhoto->save();
+					if(($time-$photo->created_time)>=$timeDiff) {
+						break 2;
 					}
-					else {
-						$params = ['max_tag_id'=>$photos->pagination->next_max_tag_id];
-					}
+				}
 
+				
+				$user = ORM::for_table('user')->where('user_id',$photo->user->id)->find_one();
+				if(is_object($user)) {
+					//Если пользователь обновил имя то меняем его в БД
+					if($user->user_name!=$photo->user->username) {
+						$user->user_name = $photo->user->username;
+						$user->save();
+						echo "Update user: ".$user->user_id."\n";
+					}
 				}
 				else {
-					exit("Done!\n");
+					//Если пользователя не существует в БД, то создаем его и делаем первую запись в журнале
+					$user = ORM::for_table('user')->create();
+					$user->user_id = $photo->user->id;
+
+					$getUser = $instagram->getUser($photo->user->id);
+					if($getUser) {
+						$user->followers = $getUser->data->counts->followed_by;
+
+						$dbUserLog = ORM::for_table('user_log')->create();
+						$dbUserLog->user_id = $photo->user->id;
+						$dbUserLog->date = $date;
+						$dbUserLog->posts = $getUser->data->counts->media;
+						$dbUserLog->followers = $getUser->data->counts->followed_by;
+						$dbUserLog->follows = $getUser->data->counts->follows;
+						$dbUserLog->save();
+						echo "New user log: ".$photo->user->id."\n";
+					}
+
+					$user->user_name = $photo->user->username;
+
+
+					$doubleCheck = ORM::for_table('user')->where('user_name',$photo->user->username)->find_one();
+					if(is_object($doubleCheck)) {
+						$duser = ORM::for_table('user')->where_equal('user_name', $photo->user->username)->delete_many();
+					}
+
+					$user->save();
+					echo "New user: ".$photo->user->username."\n";
+
+				}
+
+
+				// $dbPhoto = ORM::for_table('photos')->where('photo_id',$photo->id)->where('tag',$tag)->find_one();
+				$dbPhoto = ORM::for_table('photos')->where('photo_id',$photo->id)->find_one();
+				if(is_object($dbPhoto)) {
+					//Если фото существует обновляем лайки
+					if($dbPhoto->likes!=$photo->likes->count) {
+						$dbPhoto->likes = $photo->likes->count;
+					}
+					if($dbPhoto->tag!=$tag) {
+						$dbPhoto->tag = $tag;
+					}
+					if($user->banned==1) {
+						$dbPhoto->banned = 1;
+					}
+					$dbPhoto->updated = $date;
+					$dbPhoto->save();
+				}
+				else {
+					//Если не существует, то создаем
+					$dbPhoto = ORM::for_table('photos')->create();
+					$dbPhoto->created_time = $photo->created_time;
+					$dbPhoto->link = $photo->link;
+					$dbPhoto->user_id = $user->user_id;
+					$dbPhoto->tag = $tag;
+					$dbPhoto->updated = $date;
+					$dbPhoto->photo_id = $photo->id;
+					$dbPhoto->likes = $photo->likes->count;
+					if($user->banned==1) {
+						$dbPhoto->banned = 1;
+					}
+					$dbPhoto->save();
+					echo "New photo: ".$photo->id."\n";
+				}
+				
+				//Ставим метку пагинации
+				if($dbPhoto->photo_id==$endPhoto->id) {
+					if(isset($photos->pagination->next_max_tag_id)) {
+						if($mode=="best") {
+							$dbPhoto->next_max_id = $photos->pagination->next_max_tag_id;
+							$dbPhoto->save();
+						}
+						else {
+							$params = ['max_tag_id'=>$photos->pagination->next_max_tag_id];
+						}
+					}
+					else {
+						exit("Done!\n");
+					}
 				}
 			}
-			
 		}
+		else {
+			echo "No data from instagram"."\n";
+		}
+
 		$updatedCount = ORM::for_table('photos')->where('updated',$date)->where('tag',$tag)->count();
 		$i = $updatedCount;
 	}

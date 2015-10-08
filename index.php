@@ -25,7 +25,7 @@ $klein->respond(function ($request, $response, $service) {
 //Index page
 $klein->respond('GET', '/', function ($request, $response, $service) {
 	$time = time();
-	$items = ORM::for_table('photos')->where_gt('created_time',$time-86400)->order_by_desc('likes')->limit(10)->find_many();
+	$items = ORM::for_table('photos')->where_gt('created_time',$time-86400)->where('banned',0)->order_by_desc('likes')->limit(10)->find_many();
 
 	$service->metaKeywords = 'Лучшие инстаграмы Ульяновска за сутки';
 	$service->metaTitle = 'Топ 10 фотографий за сутки #'.$service->hashTag;
@@ -38,7 +38,7 @@ $klein->respond('GET', '/', function ($request, $response, $service) {
 //Topweek page
 $klein->respond('GET', '/topweek', function ($request, $response, $service) {
 	$time = time();
-	$items = ORM::for_table('photos')->where_gt('created_time',$time-(86400*7))->order_by_desc('likes')->limit(10)->find_many();
+	$items = ORM::for_table('photos')->where_gt('created_time',$time-(86400*7))->where('banned',0)->order_by_desc('likes')->limit(10)->find_many();
 
 	$service->metaKeywords = 'Лучшие инстаграмы Ульяновска за неделю';
 	$service->metaTitle = 'Топ 10 фотографий за неделю #'.$service->hashTag;
@@ -50,7 +50,7 @@ $klein->respond('GET', '/topweek', function ($request, $response, $service) {
 
 //Best-ever page
 $klein->respond('GET', '/best', function ($request, $response, $service) use ($klein) {
-	$items = ORM::for_table('photos')->order_by_desc('likes')->limit(10)->find_many();
+	$items = ORM::for_table('photos')->where('banned',0)->order_by_desc('likes')->limit(10)->find_many();
 	$pagination = [
 		1 => 'active',
 		2,3,4,5,6,7,8,9,10
@@ -82,7 +82,7 @@ $klein->respond('GET', '/best/[*:page]', function ($request, $response, $service
 			exit;
 		}
 		if($offset>0) {
-			$count = ORM::for_table('photos')->order_by_desc('likes')->offset(10*$offset)->limit(90)->select('id')->find_many();
+			$count = ORM::for_table('photos')->where('banned',0)->order_by_desc('likes')->offset(10*$offset)->limit(90)->select('id')->find_many();
 			$pagination = [
 				$offset,
 				'active',
@@ -117,7 +117,7 @@ $klein->respond('GET', '/best/[*:page]', function ($request, $response, $service
 
 
 $klein->respond('GET', '/oldest', function ($request, $response, $service) use ($klein) {
-	$items = ORM::for_table('photos')->order_by_asc('created_time')->limit(10)->find_many();
+	$items = ORM::for_table('photos')->where('banned',0)->order_by_asc('created_time')->limit(10)->find_many();
 	$pagination = [
 		1 => 'active',
 		2,3,4,5,6,7,8,9,10
@@ -149,7 +149,7 @@ $klein->respond('GET', '/oldest/[*:page]', function ($request, $response, $servi
 				exit;
 			}
 		if($offset>0) {
-			$count = ORM::for_table('photos')->order_by_asc('created_time')->offset(10*$offset)->limit(90)->select('id')->find_many();
+			$count = ORM::for_table('photos')->where('banned',0)->order_by_asc('created_time')->offset(10*$offset)->limit(90)->select('id')->find_many();
 			$pagination = [
 				$offset,
 				'active',
@@ -182,7 +182,7 @@ $klein->respond('GET', '/oldest/[*:page]', function ($request, $response, $servi
 });
 
 $klein->respond('GET', '/not-popular', function ($request, $response, $service) use ($klein) {
-	$items = ORM::for_table('photos')->order_by_asc('likes')->limit(10)->find_many();
+	$items = ORM::for_table('photos')->where('banned',0)->order_by_asc('likes')->limit(10)->find_many();
 	$pagination = [
 		1 => 'active',
 		2,3,4,5,6,7,8,9,10
@@ -214,7 +214,7 @@ $klein->respond('GET', '/not-popular/[*:page]', function ($request, $response, $
 		}
 
 		if($offset>0) {
-			$count = ORM::for_table('photos')->order_by_asc('likes')->offset(10*$offset)->limit(90)->select('id')->find_many();
+			$count = ORM::for_table('photos')->where('banned',0)->order_by_asc('likes')->offset(10*$offset)->limit(90)->select('id')->find_many();
 			$pagination = [
 				$offset,
 				'active',

@@ -27,7 +27,7 @@ CREATE TABLE `photos` (
   `created_time` int(11) NOT NULL,
   `link` varchar(200) NOT NULL,
   `user_id` bigint(20) NOT NULL,
-  `tag` varchar(30) NOT NULL,
+  `tag` varchar(200) NOT NULL,
   `updated` date NOT NULL,
   `next_max_id` varchar(200) NOT NULL,
   `photo_id` varchar(50) NOT NULL,
