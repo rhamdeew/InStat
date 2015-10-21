@@ -10,7 +10,7 @@
 		color: #5dc50b;
 		font-size: 4rem;
 	}
-	body { 
+	body {
 		padding-top: 70px;
 	}
 	.table {
@@ -19,4 +19,12 @@
 	}
 	.table .username {
 		font-size: 1.8rem;
+	}
+	.links {
+		margin-top:10px;
+		margin-bottom: 10px;
+	}
+	.links a {
+		font-size: 2.5rem;
+		color: #5dc50b;
 	}

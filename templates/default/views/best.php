@@ -19,7 +19,7 @@
 			}
 			</script>
 			<?php foreach($this->items as $item): ?>
-				<script src="http://api.instagram.com/oembed?url=<?php echo $item->link?>&callback=callMe"></script>
+				<script src="http://api.instagram.com/oembed?url=<?php echo $item->link?>&callback=callMe"></script>		
 			<?php endforeach; ?>
 			<?php if(isset($this->pagination) && isset($this->partUrl)): ?>
 			<nav>

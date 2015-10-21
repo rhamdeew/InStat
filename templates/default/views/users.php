@@ -1,6 +1,6 @@
 		<div class="row">
 			<div class="col-xs-12 col-md-8 col-lg-6 col-lg-offset-3 page-container">
-			<h1><?php echo $this->escape($this->siteName); ?></h1>
+			<h1>Самые популярные пользователи #<?= $this->hashTag; ?></h1>
 
 			<?php if(isset($this->page)): ?>
 				<h2>Страница: <?php echo $this->page; ?></h2>
@@ -13,6 +13,8 @@
 				<input type="text" id="user-search-username">
 				<button id="user-search-button">Найти себя</button>
 			</form>
+			<br/>
+			<script type="text/javascript" src="//yastatic.net/share/share.js" charset="utf-8"></script><div class="yashare-auto-init" data-yashareL10n="ru" data-yashareType="small" data-yashareQuickServices="vkontakte,facebook,twitter,odnoklassniki,gplus" data-yashareTheme="counter"></div>
 			<table class="table">
 			<tr class="warning">
 				<td>username</td>
@@ -51,7 +53,7 @@
 						$followsDiffHtml = '<span class="text-muted">--</span>';
 					}
 				}
-				
+
 			}
 			if(isset($item['yfollowers']) && isset($item['followers'])) {
 				if($item['yfollowers']>0) {
@@ -65,7 +67,7 @@
 						$followersDiffHtml = '<span class="text-muted">--</span>';
 					}
 				}
-				
+
 			}
 			?>
 			<tr>
@@ -81,7 +83,7 @@
 			  <ul class="pagination">
 				<?php foreach($this->pagination as $page_val): ?>
 					<?php if($page_val=='active'): ?>
-					<li class="active">	
+					<li class="active">
 						<?php if(isset($this->page)): ?>
 						<a href="<?php echo $this->partUrl.$this->page;?>"><?php echo $this->page; ?></a>
 						<?php else: ?>

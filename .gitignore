@@ -3,3 +3,6 @@ composer.phar
 
 .env
 /vendor
+!/templates
+/templates/*
+!/templates/default
