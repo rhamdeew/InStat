@@ -26,6 +26,7 @@
 <pre>
 	mysql -uuser -ppassword db < schemes/schema.sql
 	mysql -uuser -ppassword db < schemes/schema08102015.sql
+	mysql -uuser -ppassword db < schemes/schema21102015.sql
 </pre>
 5. В cron записываем правила для получения необходимых данных.
 Пример:
