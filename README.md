@@ -2,19 +2,9 @@
 - Добавлена поддержка кириллических тегов
 - Добавлена поддержка бана пользователей и фотографий
 - Роутер сделан подключаемым (чтобы делать свои роутинги)
-
+- Добавлена консольная утилита для бана, запуск:
 <pre>
-	UPDATE user SET banned=1 WHERE user_name="video.prikol";
-
-	SELECT user_id FROM user WHERE user_name="video.prikol";
-+------------+
-| user_id    |
-+------------+
-| 1590109359 |
-+------------+
-1 row in set (0.00 sec)
-
-	UPDATE photos SET banned=1 WHERE user_id=1590109359;
+php ban.php
 </pre>
 
 ### Установка

@@ -77,7 +77,7 @@ $klein->respond('GET', '/best/[*:page]', function ($request, $response, $service
 				$pagination[] = $request->page+$i;
 			}
 
-			$items = ORM::for_table('photos')->order_by_desc('likes')->offset(10*$offset)->limit(10)->find_many();
+			$items = ORM::for_table('photos')->where('banned',0)->order_by_desc('likes')->offset(10*$offset)->limit(10)->find_many();
 			if(!empty($items)) {
 				$service->items = $items;
 				$service->pagination = $pagination;
@@ -138,7 +138,7 @@ $klein->respond('GET', '/oldest/[*:page]', function ($request, $response, $servi
 				$pagination[] = $request->page+$i;
 			}
 
-			$items = ORM::for_table('photos')->order_by_asc('created_time')->offset(10*$offset)->limit(10)->find_many();
+			$items = ORM::for_table('photos')->where('banned',0)->order_by_asc('created_time')->offset(10*$offset)->limit(10)->find_many();
 			if(!empty($items)) {
 				$service->items = $items;
 				$service->pagination = $pagination;
@@ -197,7 +197,7 @@ $klein->respond('GET', '/not-popular/[*:page]', function ($request, $response, $
 				$pagination[] = $request->page+$i;
 			}
 
-			$items = ORM::for_table('photos')->order_by_asc('likes')->offset(10*$offset)->limit(10)->find_many();
+			$items = ORM::for_table('photos')->where('banned',0)->order_by_asc('likes')->offset(10*$offset)->limit(10)->find_many();
 			if(!empty($items)) {
 				$service->items = $items;
 				$service->pagination = $pagination;
@@ -364,7 +364,7 @@ $klein->respond('GET', '/user-search/[*:username]', function ($request, $respons
 	if(preg_match("/^[A-z0-9+-_]+$/", $request->username) == 1) {
 		$username = strtolower($request->username);
 
-		$user = ORM::for_table('user')->where('user_name',$username)->find_one();
+		$user = ORM::for_table('user')->where('banned',0)->where('user_name',$username)->find_one();
 
 		if(is_object($user)) {
 			$followers = $user->followers;
