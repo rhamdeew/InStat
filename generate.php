@@ -152,6 +152,10 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 				// $dbPhoto = ORM::for_table('photos')->where('photo_id',$photo->id)->where('tag',$tag)->find_one();
 				$dbPhoto = ORM::for_table('photos')->where('photo_id',$photo->id)->find_one();
 				if(is_object($dbPhoto)) {
+					//Если фото существует обновляем количество комментариев
+					if($dbPhoto->comments!=$photo->comments->count) {
+						$dbPhoto->comments = $photo->comments->count;
+					}
 					//Если фото существует обновляем лайки
 					if($dbPhoto->likes!=$photo->likes->count) {
 						$dbPhoto->likes = $photo->likes->count;
@@ -175,6 +179,7 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 					$dbPhoto->updated = $date;
 					$dbPhoto->photo_id = $photo->id;
 					$dbPhoto->likes = $photo->likes->count;
+					$dbPhoto->comments = $photo->comments->count;
 					if($user->banned==1) {
 						$dbPhoto->banned = 1;
 					}
@@ -213,8 +218,9 @@ if($mode=="best100") {
 	foreach($photos as $photo) {
 		$result = $instagram->getMedia($photo->photo_id);
 		if($result) {
-			if($photo->likes!=$result->data->likes->count) {
+			if($photo->likes!=$result->data->likes->count || $photo->comments!=$result->data->comments->count) {
 				$photo->likes = $result->data->likes->count;
+				$photo->comments = $result->data->comments->count;
 				$photo->updated = $date;
 				$photo->save();
 				echo "Update photo: ".$photo->id."\n";
