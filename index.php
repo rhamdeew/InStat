@@ -14,7 +14,6 @@ $hashTag = getenv('HASHTAG');
 
 define('MAIN',true);
 $production = getenv('PRODUCTION');
-var_dump($production);
 if($production=='true') {
     define('PRODUCTION',true);
 }

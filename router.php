@@ -381,6 +381,7 @@ $klein->respond('GET', '/user-search/[*:username]', function ($request, $respons
 
 			if($page>0) {
 				$service->username = $username;
+				$service->usernameLink = '/user-detail/'.$username;
 				$service->code = 'usersearch';
 				$service->page = $page;
 				$service->render($service->templatePath.'views/user-search.php');

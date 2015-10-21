@@ -15,6 +15,40 @@
 			<script src="http://api.instagram.com/oembed?url=<?php echo $this->photo->link?>&callback=callMe"></script>
 
 			<script type="text/javascript" src="//yastatic.net/share/share.js" charset="utf-8"></script><div class="yashare-auto-init" data-yashareL10n="ru" data-yashareType="small" data-yashareQuickServices="vkontakte,facebook,twitter,odnoklassniki,gplus" data-yashareTheme="counter"></div>
+
+			Статистика пользователя:
+			<?php $this->result = array_reverse($this->result);?>
+			<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+			<script type="text/javascript">
+			  google.load("visualization", "1", {packages:["corechart"]});
+			  google.setOnLoadCallback(drawChart);
+			  function drawChart() {
+				var data = google.visualization.arrayToDataTable([
+					['День', 'Посты', 'Подписчики', 'Подписки'],
+					<?php
+					$end = (count($this->result)-1);
+					foreach($this->result as $key => $item) {
+						if($key!=$end) {
+							echo "['".$item->date."', ".$item->posts.", ".$item->followers.", ".$item->follows."],\n";
+						}
+						else {
+							echo "['".$item->date."', ".$item->posts.", ".$item->followers.", ".$item->follows."]\n";
+						}
+					}?>
+				]);
+
+				var options = {
+				  title: 'Статистика аккаунта',
+				  hAxis: {title: 'День',  titleTextStyle: {color: '#333'}},
+				  vAxis: {minValue: 0}
+				};
+
+				var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+				chart.draw(data, options);
+			  }
+			</script>
+			<div id="chart_div" style="width: 900px; height: 500px;"></div>
+
 			<table class="table">
 			<tr class="warning">
 				<td>дата</td>
@@ -22,8 +56,7 @@
 				<td>подписчики</td>
 				<td>подписки</td>
 			</tr>
-			<?php $this->result = array_reverse($this->result);?>
-			<?php if(count($this->result>1)):?>
+			<?php if(count($this->result)>1):?>
 			<?php foreach($this->result as $key => $item):?>
 			<?php
 			$postDiffHtml = '--';
