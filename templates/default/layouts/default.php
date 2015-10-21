@@ -67,18 +67,18 @@
 	<link rel="stylesheet" href="/css/bootstrap.min.css">
 	<link rel="stylesheet" href="/<?= $this->templatePath?>css/style.css">
 	<script src="//code.jquery.com/jquery-1.10.2.min.js"></script>
-	<meta name="description" content="<?= $description; ?>">
-	<meta property="og:type" content="website">
-	<meta property="og:title" content="<?= $metaTitle; ?>">
-	<meta property="og:url" content="<?= $this->siteURL; ?>">
-	<meta property="og:site_name" content="Insta#ULSK">
-	<meta property="og:image" content="<?= $description; ?>/logo.png" />
-	<meta property="og:description" content="<?= $description; ?>">
-	<meta name="twitter:card" content="summary">
-	<meta name="twitter:title" content="<?= $this->siteName; ?>">
-	<meta name="twitter:description" content="<?= $description; ?>">
-	<meta name="twitter:creator" content="@rhamdeew">
-	<meta keywords="<?= $keywords; ?>">
+	<meta name="description" content="<?= $description; ?>" />
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="<?= $metaTitle; ?>" />
+	<meta property="og:url" content="<?= $this->siteURL; ?>" />
+	<meta property="og:site_name" content="Insta#ULSK" />
+	<meta property="og:image" content="<?= $this->siteURL; ?>/logo.png" />
+	<meta property="og:description" content="<?= $description; ?>" />
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:title" content="<?= $this->siteName; ?>" />
+	<meta name="twitter:description" content="<?= $description; ?>" />
+	<meta name="twitter:creator" content="@rhamdeew" />
+	<meta keywords="<?= $keywords; ?>" />
 </head>
 <body>
 	<nav class="navbar navbar-default navbar-fixed-top">
