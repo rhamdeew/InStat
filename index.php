@@ -13,5 +13,11 @@ ORM::configure('password', getenv('DB_PASSWORD'));
 $hashTag = getenv('HASHTAG');
 
 define('MAIN',true);
+$production = getenv('PRODUCTION');
+var_dump($production);
+if($production=='true') {
+    define('PRODUCTION',true);
+}
+
 require getenv('ROUTER');
 ?>
