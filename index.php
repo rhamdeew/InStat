@@ -12,5 +12,6 @@ ORM::configure('password', getenv('DB_PASSWORD'));
 
 $hashTag = getenv('HASHTAG');
 
+define('MAIN',true);
 require getenv('ROUTER');
 ?>

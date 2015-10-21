@@ -1,4 +1,9 @@
 <?php
+
+if(!defined('MAIN')) {
+	die('No way!');
+}
+
 $klein = new \Klein\Klein();
 
 $klein->respond(function ($request, $response, $service) {
@@ -347,6 +352,11 @@ $klein->respond('GET', '/users/[*:page]', function ($request, $response, $servic
 	}
 });
 
+$klein->respond('GET', '/user-search', function ($request, $response, $service) use ($klein) {
+	header('Location: /users');
+	exit;
+});
+
 $klein->respond('GET', '/user-search/[*:username]', function ($request, $response, $service) use ($klein) {
 	$flag = false;
 
@@ -384,6 +394,11 @@ $klein->respond('GET', '/user-search/[*:username]', function ($request, $respons
 		$service->metaTitle = "404";
 		$service->render($service->templatePath.'views/error.php');
 	}
+});
+
+$klein->respond('GET', '/user-detail', function ($request, $response, $service) use ($klein) {
+	header('Location: /users');
+	exit;
 });
 
 $klein->respond('GET', '/user-detail/[*:username]', function ($request, $response, $service) use ($klein) {

@@ -83,7 +83,7 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 		if($mode=="best") {
 			//Получаем последнюю метку пагинации (если существует)
 			$result = ORM::for_table('photos')->where('updated',$date)->where('tag',$tag)->where_gt('next_max_id',0)->order_by_asc('created_time')->find_one();
-			
+
 			$params = [];
 			if(is_object($result)) {
 				$params = ['max_tag_id'=>$result->next_max_id];
@@ -94,7 +94,7 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 		$photos = $instagram->getTagMedia(urlencode($tag),33,$params);
 		if(is_array($photos->data)) {
 			$endPhoto = end($photos->data);
-			
+
 			foreach ($photos->data as $key => $photo) {
 
 				//Если режим с ограничением по дате публикации то останавливаем цикл по условию
@@ -106,7 +106,7 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 					}
 				}
 
-				
+
 				$user = ORM::for_table('user')->where('user_id',$photo->user->id)->find_one();
 				if(is_object($user)) {
 					//Если пользователь обновил имя то меняем его в БД
@@ -181,7 +181,7 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 					$dbPhoto->save();
 					echo "New photo: ".$photo->id."\n";
 				}
-				
+
 				//Ставим метку пагинации
 				if($dbPhoto->photo_id==$endPhoto->id) {
 					if(isset($photos->pagination->next_max_tag_id)) {
@@ -262,7 +262,7 @@ if($mode=="users") {
 					$dbUserLog->followers = $result->data->counts->followed_by;
 				}
 				if(isset($result->data->counts->follows)) {
-					$dbUserLog->follows = $result->data->counts->follows;                    
+					$dbUserLog->follows = $result->data->counts->follows;
 				}
 				$dbUserLog->save();
 				echo "New user log: ".$user->user_id."   ".($key+1)."\n";
