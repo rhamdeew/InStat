@@ -77,6 +77,28 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 		$number = $tagCount;
 	}
 
+	$lazyUsers = array();
+	$dbUsers = ORM::for_table('user')->select('user_id')->select('user_name')->select('banned')->find_array();
+	foreach($dbUsers as $user) {
+		$lazyUsers[$user['user_id']] = array(
+			'user_name' => $user['user_name'],
+			'banned' => $user['banned'],
+			);
+	}
+	unset($dbUsers);
+
+	$lazyPhotos = array();
+	$dbPhotos = ORM::for_table('photos')->select('photo_id')->select('comments')->select('likes')->select('tag')->select('banned')->find_array();
+	foreach($dbPhotos as $photo) {
+		$lazyPhotos[$photo['photo_id']] = array(
+			'comments' => $photo['comments'],
+			'likes' => $photo['likes'],
+			'tag' => $photo['tag'],
+			'banned' => $photo['banned'],
+			);
+	}
+	unset($dbPhotos);
+
 	$i = 0;
 	while($i<$tagCount && $i<$number) {
 		//Не выходим за рамки лимитов
@@ -107,13 +129,17 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 				}
 
 
-				$user = ORM::for_table('user')->where('user_id',$photo->user->id)->find_one();
-				if(is_object($user)) {
+				if(isset($lazyUsers[$photo->user->id])) {
 					//Если пользователь обновил имя то меняем его в БД
-					if($user->user_name!=$photo->user->username) {
-						$user->user_name = $photo->user->username;
-						$user->save();
-						echo "Update user: ".$user->user_id."\n";
+					if($lazyUsers[$photo->user->id]['user_name']!=$photo->user->username) {						
+						$lazyUsers[$photo->user->id]['user_name']=$photo->user->username;
+
+						$user = ORM::for_table('user')->where('user_id',$photo->user->id)->select('id')->select('user_name')->find_one();
+						if(is_object($user)) {
+							$user->user_name = $photo->user->username;
+							$user->save();							
+							echo "Update user: ".$photo->user->id."\n";
+						}
 					}
 				}
 				else {
@@ -146,51 +172,79 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 					$user->save();
 					echo "New user: ".$photo->user->username."\n";
 
+					$lazyUsers[$photo->user->id]['user_name'] = $photo->user->username;
+					$lazyUsers[$photo->user->id]['banned'] = 0;
 				}
 
-
-				// $dbPhoto = ORM::for_table('photos')->where('photo_id',$photo->id)->where('tag',$tag)->find_one();
-				$dbPhoto = ORM::for_table('photos')->where('photo_id',$photo->id)->find_one();
-				if(is_object($dbPhoto)) {
+				if(isset($lazyPhotos[$photo->id])) {
+					$updateFlag = false;
 					//Если фото существует обновляем количество комментариев
-					if($dbPhoto->comments!=$photo->comments->count) {
-						$dbPhoto->comments = $photo->comments->count;
+					if($lazyPhotos[$photo->id]['comments']!=$photo->comments->count) {
+						$lazyPhotos[$photo->id]['comments'] = $photo->comments->count;
+						$updateFlag = true;
 					}
 					//Если фото существует обновляем лайки
-					if($dbPhoto->likes!=$photo->likes->count) {
+					if($lazyPhotos[$photo->id]['likes']!=$photo->likes->count) {
+						$lazyPhotos[$photo->id]['likes'] = $photo->likes->count;
+						$updateFlag = true;
+					}
+					if($lazyPhotos[$photo->id]['tag']!=$tag) {
+						$lazyPhotos[$photo->id]['tag'] = $tag;
+						$updateFlag = true;	
+					}
+					if($lazyPhotos[$photo->id]['banned']!=$lazyUsers[$photo->user->id]['banned']) {
+						$lazyPhotos[$photo->id]['banned'] = $lazyUsers[$photo->user->id]['banned'];
+						$updateFlag = true;
+					}
+
+					if($updateFlag) {
+						$dbPhoto = ORM::for_table('photos')->where('photo_id',$photo->id)->find_one();
+						$dbPhoto->comments = $photo->comments->count;
 						$dbPhoto->likes = $photo->likes->count;
-					}
-					if($dbPhoto->tag!=$tag) {
 						$dbPhoto->tag = $tag;
+						$dbPhoto->banned = $lazyPhotos[$photo->id]['banned'];
+						$dbPhoto->updated = $date;
+						$dbPhoto->save();	
+						echo "Updated photo: ".$photo->id."\n";		
+
+						$lazyPhotos[$photo->id] = array(
+							'comments' => $photo->comments->count,
+							'likes' => $photo->likes->count,
+							'tag' => $tag,
+							'banned' => $lazyUsers[$photo->user->id]['banned'],
+							);			
 					}
-					if($user->banned==1) {
-						$dbPhoto->banned = 1;
-					}
-					$dbPhoto->updated = $date;
-					$dbPhoto->save();
 				}
 				else {
 					//Если не существует, то создаем
 					$dbPhoto = ORM::for_table('photos')->create();
 					$dbPhoto->created_time = $photo->created_time;
 					$dbPhoto->link = $photo->link;
-					$dbPhoto->user_id = $user->user_id;
+					$dbPhoto->user_id = $photo->user->id;
 					$dbPhoto->tag = $tag;
 					$dbPhoto->updated = $date;
 					$dbPhoto->photo_id = $photo->id;
 					$dbPhoto->likes = $photo->likes->count;
 					$dbPhoto->comments = $photo->comments->count;
-					if($user->banned==1) {
+					if($lazyUsers[$photo->user->id]['banned']==1) {
 						$dbPhoto->banned = 1;
 					}
 					$dbPhoto->save();
 					echo "New photo: ".$photo->id."\n";
+
+					$lazyPhotos[$photo->id] = array(
+						'comments' => $photo->comments->count,
+						'likes' => $photo->likes->count,
+						'tag' => $tag,
+						'banned' => $lazyUsers[$photo->user->id]['banned'],
+						);
 				}
 
 				//Ставим метку пагинации
-				if($dbPhoto->photo_id==$endPhoto->id) {
+				if($photo->id==$endPhoto->id) {
 					if(isset($photos->pagination->next_max_tag_id)) {
 						if($mode=="best") {
+							$dbPhoto = ORM::for_table('photos')->where('photo_id',$photo->id)->find_one();
 							$dbPhoto->next_max_id = $photos->pagination->next_max_tag_id;
 							$dbPhoto->save();
 						}
