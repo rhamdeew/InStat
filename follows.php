@@ -54,6 +54,9 @@ if(isset($_GET['code'])) {
 		.panel a {
 			margin: 0px 5px;
 		}
+		h1 {
+			padding-top: 40px;
+		}
 		table {
 			text-align: left;
 			margin:auto;
@@ -64,6 +67,7 @@ if(isset($_GET['code'])) {
 			background-color: #ccff9a;
 		}
 	</style>
+	<title>Статистика пользователя</title>
 </head>
 <body>
 <?php
