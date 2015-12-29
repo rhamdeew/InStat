@@ -1,4 +1,5 @@
 ### Обновления
+- Добавлен скрипт follows.php позволяющий пользователю авторизоваться через Instagram и посмотреть статистику по своим фолловерам
 - Добавлена поддержка кириллических тегов
 - Добавлена поддержка бана пользователей и фотографий
 - Роутер сделан подключаемым (чтобы делать свои роутинги)
@@ -12,13 +13,23 @@ php ban.php
 1. Клонируем репозиторий
 2. composer update
 3. Копируем .env_sample в .env и редактируем там необходимые поля
-4. Импортируем схему БД - 
+4. Импортируем схему БД -
 <pre>
 	mysql -uuser -ppassword db < schemes/schema.sql
 	mysql -uuser -ppassword db < schemes/schema08102015.sql
 	mysql -uuser -ppassword db < schemes/schema21102015.sql
 </pre>
-5. В cron записываем правила для получения необходимых данных.
+5. Идем на страницу https://www.instagram.com/developer/clients/manage/ и регистрируем новое приложение.
+
+![Client ID](http://i.imgur.com/oZZ4bKI.png)
+
+Там получаем CLIENT ID и CLIENT SECRET, соответственно прописываем их в .env (INSTAGRAM_API_KEY,INSTAGRAM_API_SECRET)
+
+Прописываем у приложения REDIRECT URI
+
+![REDIRECT URI](http://i.imgur.com/CqehjtK.png)
+
+6. В cron записываем правила для получения необходимых данных.
 Пример:
 <pre>
 35 8-23 * * * php /var/www/site/generate.php --topday
@@ -27,4 +38,8 @@ php ban.php
 0 2 * * 6 php /var/www/site/generate.php --best
 0 6 * * * php /var/www/site/generate.php --users
 </pre>
-6. Опционально копируем шаблон в templates и прописываем название шаблона в .env
+7. Опционально копируем шаблон в templates и прописываем название шаблона в .env
+
+### Демо
+
+[InstaUlsk](http://instaulsk.ru)

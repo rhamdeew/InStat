@@ -3,6 +3,23 @@
 namespace MetzWeb\Instagram;
 
 class MyInsta extends Instagram {
+
+	public function getUserFollows($id = 'self', $limit = 0, $next_cursor = '') {
+		$params = array('count' => $limit);
+		if(!empty($next_cursor)) {
+			$params['cursor'] = $next_cursor;
+		}
+		return $this->_makeCall('users/' . $id . '/follows', true, $params);
+	}
+
+	public function getUserFollower($id = 'self', $limit = 0, $next_cursor = '') {
+		$params = array('count' => $limit);
+		if(!empty($next_cursor)) {
+			$params['cursor'] = $next_cursor;
+		}
+		return $this->_makeCall('users/' . $id . '/followed-by', true, $params);
+	}
+
 	public function getTagMedia($name, $limit = 0,$params = array())
 	{
 		if ($limit > 0) {
@@ -33,7 +50,7 @@ class MyInsta extends Instagram {
 					break 2;
 				}
 			}
-			
+
 			if(isset($photos->pagination->next_max_tag_id)) {
 				$max_tag_id = $photos->pagination->next_max_tag_id;
 				$params = ['max_tag_id'=>$max_tag_id];
@@ -93,7 +110,7 @@ class MyInsta extends Instagram {
 			}
 		}
 		file_put_contents('../users.txt', implode("\n",array_keys($users)));
-		return array_slice($mostLikedRealSlice,0,$limit);    	
+		return array_slice($mostLikedRealSlice,0,$limit);
 	}
 }
 ?>
