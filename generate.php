@@ -70,7 +70,18 @@ $params = [];
 if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 
 	$tagResult = $instagram->getTag(urlencode($tag));
-	$tagCount = $tagResult->data->media_count;
+	if(is_object($tagResult)) {
+		$tagCount = $tagResult->data->media_count;
+	}
+	else {
+		$tagCount = 0;
+		var_dump($tagResult);
+		die('azaza');
+		// file_put_contents(filename, data)
+	}
+	var_dump($tagResult);
+	die('losk');
+
 
 	//Если указываем number, то лимитируем по нему
 	if(empty($number)) {
@@ -131,13 +142,13 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 
 				if(isset($lazyUsers[$photo->user->id])) {
 					//Если пользователь обновил имя то меняем его в БД
-					if($lazyUsers[$photo->user->id]['user_name']!=$photo->user->username) {						
+					if($lazyUsers[$photo->user->id]['user_name']!=$photo->user->username) {
 						$lazyUsers[$photo->user->id]['user_name']=$photo->user->username;
 
 						$user = ORM::for_table('user')->where('user_id',$photo->user->id)->select('id')->select('user_name')->find_one();
 						if(is_object($user)) {
 							$user->user_name = $photo->user->username;
-							$user->save();							
+							$user->save();
 							echo "Update user: ".$photo->user->id."\n";
 						}
 					}
@@ -190,7 +201,7 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 					}
 					if($lazyPhotos[$photo->id]['tag']!=$tag) {
 						$lazyPhotos[$photo->id]['tag'] = $tag;
-						$updateFlag = true;	
+						$updateFlag = true;
 					}
 					if($lazyPhotos[$photo->id]['banned']!=$lazyUsers[$photo->user->id]['banned']) {
 						$lazyPhotos[$photo->id]['banned'] = $lazyUsers[$photo->user->id]['banned'];
@@ -204,15 +215,15 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 						$dbPhoto->tag = $tag;
 						$dbPhoto->banned = $lazyPhotos[$photo->id]['banned'];
 						$dbPhoto->updated = $date;
-						$dbPhoto->save();	
-						echo "Updated photo: ".$photo->id."\n";		
+						$dbPhoto->save();
+						echo "Updated photo: ".$photo->id."\n";
 
 						$lazyPhotos[$photo->id] = array(
 							'comments' => $photo->comments->count,
 							'likes' => $photo->likes->count,
 							'tag' => $tag,
 							'banned' => $lazyUsers[$photo->user->id]['banned'],
-							);			
+							);
 					}
 				}
 				else {
@@ -292,12 +303,15 @@ if($mode=="users") {
 	}
 
 	foreach($users as $key => $user) {
-		if(empty($number)) {
-			sleep(1);
-		}
+		// if(empty($number)) {
+			// sleep(1);
+		// }
 		$result = $instagram->getUser($user->user_id);
+		if(!is_object($result)) {
+			continue;
+		}
 
-		if($result) {
+		if($result->meta->code==200) {
 			$dbUserLog = ORM::for_table('user_log')->where('date',$date)->where('user_id',$user->user_id)->find_one();
 			if(is_object($dbUserLog)) {
 				if($result->data->counts->media!=$dbUserLog->posts || $result->data->counts->followed_by!=$dbUserLog->followers || $result->data->counts->follows!=$dbUserLog->follows) {
@@ -335,6 +349,9 @@ if($mode=="users") {
 					$user->save();
 				}
 			}
+		}
+		if($result->meta->code==400) {
+			mail(getenv('ADMIN_MAIL'),'User with error', "Error dump\n".print_r($result,true));
 		}
 	}
 }

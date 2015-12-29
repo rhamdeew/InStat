@@ -21,15 +21,10 @@ php ban.php
 	mysql -uuser -ppassword db < schemes/schema21102015.sql
 </pre>
 5. Идем на страницу https://www.instagram.com/developer/clients/manage/ и регистрируем новое приложение.
-
 ![Client ID](http://i.imgur.com/oZZ4bKI.png)
-
 Там получаем CLIENT ID и CLIENT SECRET, соответственно прописываем их в .env (INSTAGRAM_API_KEY,INSTAGRAM_API_SECRET)
-
 Прописываем у приложения REDIRECT URI
-
 ![REDIRECT URI](http://i.imgur.com/CqehjtK.png)
-
 6. В cron записываем правила для получения необходимых данных.
 Пример:
 <pre>
