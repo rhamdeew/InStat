@@ -303,9 +303,9 @@ if($mode=="users") {
 	}
 
 	foreach($users as $key => $user) {
-		// if(empty($number)) {
-			// sleep(1);
-		// }
+		if(empty($number)) {
+			usleep(500);
+		}
 		$result = $instagram->getUser($user->user_id);
 		if(!is_object($result)) {
 			continue;
