@@ -11,21 +11,26 @@ php ban.php
 
 ### Установка
 
-1. Клонируем репозиторий
-2. composer update
-3. Копируем .env_sample в .env и редактируем там необходимые поля
-4. Импортируем схему БД -
+1) Клонируем репозиторий
+2) composer update
+3) Копируем .env_sample в .env и редактируем там необходимые поля
+4) Импортируем схему БД -
 <pre>
 	mysql -uuser -ppassword db < schemes/schema.sql
 	mysql -uuser -ppassword db < schemes/schema08102015.sql
 	mysql -uuser -ppassword db < schemes/schema21102015.sql
 </pre>
-5. Идем на страницу https://www.instagram.com/developer/clients/manage/ и регистрируем новое приложение.
+5) Идем на страницу https://www.instagram.com/developer/clients/manage/ и регистрируем новое приложение.
+
 [Скриншот](http://i.imgur.com/oZZ4bKI.png)
+
 Там получаем CLIENT ID и CLIENT SECRET, соответственно прописываем их в .env
+
 Прописываем у приложения REDIRECT URI
+
 [Скриншот](http://i.imgur.com/CqehjtK.png)
-6. В cron записываем правила для получения необходимых данных.
+
+6) В cron записываем правила для получения необходимых данных.
 Пример:
 <pre>
 35 8-23 * * * php /var/www/site/generate.php --topday
@@ -34,7 +39,7 @@ php ban.php
 0 2 * * 6 php /var/www/site/generate.php --best
 0 6 * * * php /var/www/site/generate.php --users
 </pre>
-7. Опционально копируем шаблон в templates и прописываем название шаблона в .env
+7) Опционально копируем шаблон в templates и прописываем название шаблона в .env
 
 ### Демо
 
