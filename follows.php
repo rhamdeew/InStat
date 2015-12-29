@@ -51,8 +51,14 @@ if(isset($_GET['code'])) {
 			border-bottom: 1px solid #CCC;
 			background-color: white;
 		}
-		.panel a {
+		.panel a, .rate span {
 			margin: 0px 5px;
+		}
+		h1 {
+			padding-top: 40px;
+		}
+		#follows {
+			padding-top: 0px;
 		}
 		table {
 			text-align: left;
@@ -64,6 +70,7 @@ if(isset($_GET['code'])) {
 			background-color: #ccff9a;
 		}
 	</style>
+	<title>Статистика пользователя</title>
 </head>
 <body>
 <?php
@@ -79,17 +86,6 @@ if(isset($_GET['username'])) {
 
 if(isset($_SESSION['access_token'])) {
 	$instagram->setAccessToken($_SESSION['access_token']);
-	?>
-
-	<div class='panel'>
-		<a href='#follows'>Мои подписки</a>
-		<a href='#followers'>Мои подписчики</a>
-		<a href='#not-follower'>Кто не подписаны на меня</a>
-		<a href='#not-follow'>На кого я не подписан</a>
-	</div>
-
-	<?php
-	echo '<h1 id="follows">Мои подписки</h1>';
 
 	$next = '';
 	$follows = $instagram->getUserFollows($userid,100);
@@ -116,18 +112,6 @@ if(isset($_SESSION['access_token'])) {
 		}
 	}
 
-	echo '<table>';
-	echo '<thead><td>ID пользователя</td><td>Имя пользователя</td></thead>';
-
-	foreach($follow as $id => $item) {
-		echo '<tr>';
-		echo '<td>'.$id.'</td><td><a href="http://instagram.com/'.$item.'">'.$item.'</a></td>';
-		echo '</tr>';
-	}
-	echo '</table>';
-
-	echo '<h1 id="followers">Подписаны на меня</h1>';
-
 	$next = '';
 	$followers = $instagram->getUserFollower($userid,100);
 	$follower = array();
@@ -153,6 +137,52 @@ if(isset($_SESSION['access_token'])) {
 		}
 	}
 
+	//На кого я подписан и они не подписаны на меня
+	foreach($follow as $id => $item) {
+		if(!isset($follower[$id])) {
+			$not_follower[$id] = $item;
+		}
+	}
+
+	//Кто на меня подписан и я не подписан на них
+	foreach($follower as $id => $item) {
+		if(!isset($follow[$id])) {
+			$not_follow[$id] = $item;
+		}
+	}
+	?>
+
+	<div class="rate">
+	<?php
+	echo '<span>Подписки: '.count($follow).'</span>';
+	echo '<span>Подписчики: '.count($follower).'</span>';
+	echo '<span>Кол-во не подписанных на меня: '.count($not_follower).'</span>';
+	echo '<span>На кого я не подписан: '.count($not_follow).'</span>';
+	?>
+	</div>
+
+	<div class='panel'>
+		<a href='#follows'>Мои подписки</a>
+		<a href='#followers'>Мои подписчики</a>
+		<a href='#not-follower'>Кто не подписаны на меня</a>
+		<a href='#not-follow'>На кого я не подписан</a>
+	</div>
+
+	<?php
+	echo '<h1 id="follows">Мои подписки</h1>';
+
+	echo '<table>';
+	echo '<thead><td>ID пользователя</td><td>Имя пользователя</td></thead>';
+
+	foreach($follow as $id => $item) {
+		echo '<tr>';
+		echo '<td>'.$id.'</td><td><a href="http://instagram.com/'.$item.'">'.$item.'</a></td>';
+		echo '</tr>';
+	}
+	echo '</table>';
+
+	echo '<h1 id="followers">Подписаны на меня</h1>';
+
 	echo '<table>';
 	echo '<thead><td>ID пользователя</td><td>Имя пользователя</td></thead>';
 
@@ -163,12 +193,6 @@ if(isset($_SESSION['access_token'])) {
 	}
 	echo '</table>';
 
-	//На кого я подписан и они не подписаны на меня
-	foreach($follow as $id => $item) {
-		if(!isset($follower[$id])) {
-			$not_follower[$id] = $item;
-		}
-	}
 	echo '<h1 id="not-follower">На кого я подписан и они не подписаны на меня</h1>';
 	echo '<table>';
 	echo '<thead><td>ID пользователя</td><td>Имя пользователя</td></thead>';
@@ -179,15 +203,6 @@ if(isset($_SESSION['access_token'])) {
 		echo '</tr>';
 	}
 	echo '</table>';
-
-	echo '<br/>';
-
-	//Кто на меня подписан и я не подписан на них
-	foreach($follower as $id => $item) {
-		if(!isset($follow[$id])) {
-			$not_follow[$id] = $item;
-		}
-	}
 
 	echo '<h1 id="not-follow">Кто на меня подписан и я не подписан на них</h1>';
 	echo '<table>';
