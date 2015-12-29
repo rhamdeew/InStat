@@ -350,8 +350,8 @@ if($mode=="users") {
 				}
 			}
 		}
-		if($result->meta->code==400) {
-			mail(getenv('ADMIN_MAIL'),'User with error', "Error dump\n".print_r($result,true));
+		else {
+			mail(getenv('ADMIN_MAIL'),'User with error', "Error dump\n".print_r($result,true)."\n".print_r($user,true));
 		}
 	}
 }
