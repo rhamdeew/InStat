@@ -75,13 +75,7 @@ if($mode=='best' || $mode=='topday' || $mode=='topweek') {
 	}
 	else {
 		$tagCount = 0;
-		var_dump($tagResult);
-		die('azaza');
-		// file_put_contents(filename, data)
 	}
-	var_dump($tagResult);
-	die('losk');
-
 
 	//Если указываем number, то лимитируем по нему
 	if(empty($number)) {
